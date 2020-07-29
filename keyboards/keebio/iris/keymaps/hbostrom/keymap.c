@@ -2,10 +2,19 @@
 
 
 #define _QWERTY 0
-#define _QWERTY_REMOTE 1
-#define _LOWER 2
-#define _RAISE 3
-#define _ADJUST 4
+#define _LOWER 1
+#define _RAISE 2
+#define _ADJUST 3
+
+typedef union {
+  uint32_t raw;
+  struct {
+    bool remote:1;
+  };
+} user_config_t;
+user_config_t user_config;
+
+#define IS_REMOTE()   (user_config.remote)
 
 enum custom_keycodes {
   LOCAL = SAFE_RANGE,
@@ -13,8 +22,7 @@ enum custom_keycodes {
   LOWER,
   RAISE,
   ADJUST,
-  I3LOC,
-  I3REM,
+  I3MOD,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -25,21 +33,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     I3LOC,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-  //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
-  //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    KC_LCTL, LOWER,   KC_ENT,                    KC_SPC,  RAISE,   KC_RALT
-                                // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
-  ),
-
-  [_QWERTY_REMOTE] = LAYOUT(
-  //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                               KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_BSPC,
-  //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
-  //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     I3REM,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+     I3MOD,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -53,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,                             KC_HOME, KC_PGDN, KC_PGUP, KC_END,  _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, _______, _______, _______, _______, _______,                            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______,
+     _______, KC_LSFT, I3MOD,   KC_LALT, KC_LCTL, _______,                            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LSFT, _______, _______, _______, _______, _______, _______,          _______, KC_LBRC, KC_RBRC, KC_LCBR, KC_RCBR, _______, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -67,7 +61,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_MINS, KC_UNDS, KC_EQL,  KC_PLUS, _______,                            _______, _______, _______, _______, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_LBRC, KC_LCBR, KC_RCBR, KC_RBRC, _______,                            _______, _______, _______, _______, _______, _______,
+     _______, KC_LBRC, KC_LCBR, KC_RCBR, KC_RBRC, _______,                            _______, KC_RCTL, KC_RALT, I3MOD,   KC_RSFT, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -94,13 +88,15 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
     case LOCAL:
       if (record->event.pressed) {
-        set_single_persistent_default_layer(_QWERTY);
+        user_config.remote = false;
+        eeconfig_update_user(user_config.raw);
       }
       return false;
       break;
     case REMOTE:
       if (record->event.pressed) {
-        set_single_persistent_default_layer(_QWERTY_REMOTE);
+        user_config.remote = true;
+        eeconfig_update_user(user_config.raw);
       }
       return false;
       break;
@@ -132,27 +128,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
-    case I3LOC:
-      if (record->event.pressed) {
-        add_key(KC_LGUI);
-        send_keyboard_report();
+    case I3MOD:
+      if(IS_REMOTE()){
+        if (record->event.pressed) {
+          add_key(KC_LCTL);
+          add_key(KC_LALT);
+          add_key(KC_LGUI);
+          send_keyboard_report();
+        } else {
+          del_key(KC_LCTL);
+          del_key(KC_LALT);
+          del_key(KC_LGUI);
+          send_keyboard_report();
+        }
       } else {
-        del_key(KC_LGUI);
-        send_keyboard_report();
-      }
-      return false;
-      break;
-    case I3REM:
-      if (record->event.pressed) {
-        add_key(KC_LCTL);
-        add_key(KC_LALT);
-        add_key(KC_LGUI);
-        send_keyboard_report();
-      } else {
-        del_key(KC_LCTL);
-        del_key(KC_LALT);
-        del_key(KC_LGUI);
-        send_keyboard_report();
+        if (record->event.pressed) {
+          add_key(KC_LGUI);
+          send_keyboard_report();
+        } else {
+          del_key(KC_LGUI);
+          send_keyboard_report();
+        }
       }
       return false;
       break;
