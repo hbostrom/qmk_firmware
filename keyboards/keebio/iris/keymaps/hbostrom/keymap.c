@@ -22,8 +22,35 @@ enum custom_keycodes {
   LOWER,
   RAISE,
   ADJUST,
-  I3MOD,
 };
+
+typedef struct {
+    bool is_press_action;
+    uint8_t state;
+} tap;
+
+
+enum {
+    SINGLE_HOLD = 1,
+    DOUBLE_HOLD
+};
+
+// Tap dance enums
+enum {
+    MODSFT,
+    CTLSFT
+};
+
+uint8_t cur_dance(qk_tap_dance_state_t *state);
+
+void modsft_finished(qk_tap_dance_state_t *state, void *user_data);
+void modsft_reset(qk_tap_dance_state_t *state, void *user_data);
+
+void ctlsft_finished(qk_tap_dance_state_t *state, void *user_data);
+void ctlsft_reset(qk_tap_dance_state_t *state, void *user_data);
+
+#define TD_MSFT TD(MODSFT)
+#define TD_CSFT TD(CTLSFT)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -33,11 +60,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                               KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSLS,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     I3MOD,   KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+     TD_MSFT, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          _______, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
-                                    KC_LCTL, LOWER,   KC_ENT,                    KC_SPC,  RAISE,   KC_RALT
+                                    TD_CSFT,  LOWER,  KC_ENT,                    KC_SPC,  RAISE,   KC_RALT
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   ),
 
@@ -47,7 +74,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_F11,  KC_F12,  KC_F13,  KC_F14,  KC_F15,                             KC_HOME, KC_PGDN, KC_PGUP, KC_END,  _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_LSFT, I3MOD,   KC_LALT, KC_LCTL, _______,                            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______,
+     _______, _______, _______, _______, _______, _______,                            KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      KC_LSFT, _______, _______, _______, _______, _______, _______,          _______, KC_LBRC, KC_RBRC, KC_LCBR, KC_RCBR, _______, KC_RSFT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -61,7 +88,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, KC_MINS, KC_UNDS, KC_EQL,  KC_PLUS, _______,                            _______, _______, _______, _______, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     _______, KC_LBRC, KC_LCBR, KC_RCBR, KC_RBRC, _______,                            _______, KC_RCTL, KC_RALT, I3MOD,   KC_RSFT, _______,
+     _______, KC_LBRC, KC_LCBR, KC_RCBR, KC_RBRC, _______,                            _______, _______, _______, _______, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______, _______, _______,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
@@ -83,6 +110,111 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
   )
 };
+
+uint8_t cur_dance(qk_tap_dance_state_t *state) {
+    if (state->count == 1) {
+      return SINGLE_HOLD;
+    } else if (state->count == 2) {
+      return DOUBLE_HOLD;
+    }
+   return 8;
+}
+
+static tap modsft_state = {
+    .is_press_action = true,
+    .state = 0
+};
+
+void modsft_finished(qk_tap_dance_state_t *state, void *user_data) {
+  modsft_state.state = cur_dance(state);
+  switch (modsft_state.state) {
+    case SINGLE_HOLD:
+      if(IS_REMOTE()){
+        register_code(KC_LCTL);
+        register_code(KC_LALT);
+        register_code(KC_LGUI);
+      } else {
+        register_code(KC_LGUI);
+      }
+      break;
+    case DOUBLE_HOLD:
+      register_code(KC_LSFT);
+      if(IS_REMOTE()){
+        register_code(KC_LCTL);
+        register_code(KC_LALT);
+        register_code(KC_LGUI);
+      } else {
+        register_code(KC_LGUI);
+      }
+      break;
+  }
+}
+
+void modsft_reset(qk_tap_dance_state_t *state, void *user_data) {
+  switch (modsft_state.state) {
+    case SINGLE_HOLD:
+      if(IS_REMOTE()){
+        unregister_code(KC_LCTL);
+        unregister_code(KC_LALT);
+        unregister_code(KC_LGUI);
+      } else {
+        unregister_code(KC_LGUI);
+      }
+      break;
+    case DOUBLE_HOLD: unregister_code(KC_LALT);
+      unregister_code(KC_LSFT);
+      if(IS_REMOTE()){
+        unregister_code(KC_LCTL);
+        unregister_code(KC_LALT);
+        unregister_code(KC_LGUI);
+      } else {
+        unregister_code(KC_LGUI);
+      }
+      break;
+  }
+  modsft_state.state = 0;
+}
+
+static tap ctlsft_state = {
+    .is_press_action = true,
+    .state = 0
+};
+
+void ctlsft_finished(qk_tap_dance_state_t *state, void *user_data) {
+  ctlsft_state.state = cur_dance(state);
+  switch (ctlsft_state.state) {
+    case SINGLE_HOLD:
+      register_code(KC_LCTL);
+      break;
+    case DOUBLE_HOLD:
+      register_code(KC_LSFT);
+      register_code(KC_LCTL);
+      break;
+  }
+}
+
+void ctlsft_reset(qk_tap_dance_state_t *state, void *user_data) {
+  switch (ctlsft_state.state) {
+    case SINGLE_HOLD:
+      unregister_code(KC_LCTL);
+      break;
+    case DOUBLE_HOLD: unregister_code(KC_LALT);
+      unregister_code(KC_LSFT);
+      unregister_code(KC_LCTL);
+      break;
+  }
+  ctlsft_state.state = 0;
+}
+
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+    [MODSFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, modsft_finished, modsft_reset),
+    [CTLSFT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, ctlsft_finished, ctlsft_reset)
+};
+
+void keyboard_post_init_user(void) {
+  user_config.raw = eeconfig_read_user();
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
@@ -125,30 +257,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         layer_on(_ADJUST);
       } else {
         layer_off(_ADJUST);
-      }
-      return false;
-      break;
-    case I3MOD:
-      if(IS_REMOTE()){
-        if (record->event.pressed) {
-          add_key(KC_LCTL);
-          add_key(KC_LALT);
-          add_key(KC_LGUI);
-          send_keyboard_report();
-        } else {
-          del_key(KC_LCTL);
-          del_key(KC_LALT);
-          del_key(KC_LGUI);
-          send_keyboard_report();
-        }
-      } else {
-        if (record->event.pressed) {
-          add_key(KC_LGUI);
-          send_keyboard_report();
-        } else {
-          del_key(KC_LGUI);
-          send_keyboard_report();
-        }
       }
       return false;
       break;
